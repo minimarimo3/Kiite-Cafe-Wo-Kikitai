@@ -1,0 +1,29 @@
+# Kiite Cafeをデスクトップで再生するためのシンプルなアプリ
+
+## 注意
+
+> [!caution]
+> いろんなブログで解説されているであろう[kiitecafe-desktop](https://github.com/sevenc-nanashi/kiitecafe-desktop)ではありません！
+> これはkiitecafe-desktopのバックグラウンド再生が自分の環境で動かなかったので適当に作ったものであり、機能はバックグラウンド再生とMisskey共有の二つしかありません。
+
+## 機能
+
+- バックグラウンド再生
+- Misskeyでの共有
+
+![Misskeyに共有可能なダイアログが表示されている](./document/image/misskey_share.png)
+
+## ダウンロード
+
+Windows: 
+macOS: 
+
+## 初回設定
+
+最初に起動すると下のような画面が出るので、その画面の下の方にあるQRコードの真上にある「Kiiteのログインはこちら」からログインする。以上！
+![初回起動画面1](./document/image/初回起動時_1.png)
+![初回起動画面2](./document/image/初回起動時_2.png)
+
+## 連絡・バグ報告・感想
+
+[Googleフォーム](https://forms.gle/3ndDVkSmb6GgzzFE6)かissueからどうぞ。
