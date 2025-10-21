@@ -1,5 +1,4 @@
-// main.js (UI Patcher版)
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, shell } = require('electron'); // ★ 変更: shell を追加
 const path = require('path');
 const fs = require('fs');
 
@@ -13,18 +12,17 @@ try {
 
 // --- 注入するJSコードを外部ファイルから読み込む ---
 let injectorScript = '';
-let patcherScript = ''; // ★ 変更: Patcherスクリプト用変数を追加
+let patcherScript = '';
 
 try {
     const injectorPath = path.join(__dirname, 'injector.js');
     injectorScript = fs.readFileSync(injectorPath, 'utf8');
 
-    // ★ 変更: patcher.js も読み込む
     const patcherPath = path.join(__dirname, 'patcher.js');
     patcherScript = fs.readFileSync(patcherPath, 'utf8');
 
 } catch (e) {
-    console.error('Failed to read injector.js or patcher.js:', e); // ★ 変更
+    console.error('Failed to read injector.js or patcher.js:', e);
     app.quit();
 }
 
@@ -36,6 +34,28 @@ function createWindow() {
         webPreferences: {
         }
     });
+
+    // ★★★
+    // ★ 変更 (問題2の対策):
+    // window.open() の呼び出しをすべて横取りする
+    // ★★★
+    win.webContents.setWindowOpenHandler(({ url }) => {
+        try {
+            // 安全なURL (http/https) のみ
+            if (url.startsWith('https://')) {
+                // Electronアプリ内で新しいウィンドウを開く代わりに、
+                // PCのデフォルトのブラウザ（Chrome, Edge等）で開く
+                console.log(`[WindowHandler] Opening external URL: ${url}`);
+                shell.openExternal(url);
+            }
+        } catch (e) {
+            console.error('Failed to open external URL:', e);
+        }
+
+        // Electronに新しいウィンドウを「開かせない」
+        return { action: 'deny' };
+    });
+
 
     // --- イベントリスナー ---
 
@@ -58,7 +78,7 @@ function createWindow() {
             win.loadURL('https://cafe.kiite.jp/pc/');
         }
 
-        // ★ 変更: カフェのページが読み込まれたらPatcherを注入
+        // 2. カフェのページが読み込まれたらPatcherを注入
         if (currentURL.startsWith('https://cafe.kiite.jp/')) {
             console.log('[Kiite Patcher] Cafe page loaded. Injecting UI patcher...');
             win.webContents.executeJavaScript(patcherScript)
@@ -67,11 +87,8 @@ function createWindow() {
     });
 
     // --- 初期ロードとデバッグ ---
-
     win.loadURL('https://kiite.jp');
-
-    // デバッグツールを自動で開く (不要になったらこの行を削除かコメントアウト)
-    win.webContents.openDevTools(); // ← デバッグが終わったらコメントアウト推奨
+    win.webContents.openDevTools(); // デバッグが不要ならコメントアウト
 }
 
 // --- アプリのライフサイクル ---
