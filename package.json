@@ -1,13 +1,37 @@
 {
   "name": "kiite-app",
   "version": "1.0.0",
-  "description": "",
+  "description": "Kiite Cafeをバックグラウンド再生できるデスクトップアプリ",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "electron-builder"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": "minimarimo",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^38.3.0",
+    "electron-builder": "^24.0.0"
+  },
+  "build": {
+    "appId": "com.yourname.kiite-cafe-desktop",
+    "productName": "Kiite Cafe Desktop",
+    "files": [
+      "main.js",
+      "injector.js",
+      "patcher.js",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
 }

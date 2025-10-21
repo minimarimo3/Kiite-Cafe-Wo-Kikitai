@@ -1,4 +1,4 @@
-// patcher.js (v6 - イベント伝播を停止)
+// patcher.js (v7 - 共有ボタンの見た目を変更)
 (function () {
     'use strict';
 
@@ -12,7 +12,6 @@
     const PATCHED_ATTR = 'data-kiite-patched';
 
     // 1. 共有モーダル用のスタイル(CSS)を<head>に追加
-    // (v5から変更なし)
     const style = document.createElement('style');
     style.type = 'text/css';
     style.innerHTML = `
@@ -45,7 +44,6 @@
 
 
     // 2. モーダルを閉じる関数
-    // (v5から変更なし)
     function hideModal() {
         const modal = document.getElementById(MODAL_ID);
         const bg = document.getElementById(MODAL_BG_ID);
@@ -54,15 +52,12 @@
     }
 
     // 3. モーダルを表示する関数
-    // (v5から変更なし)
     function showShareModal(title, artist) {
         hideModal();
         const shareText = `${title} / ${artist} #KiiteCafe`;
         const encodedText = encodeURIComponent(shareText);
         const kiiteURL = encodeURIComponent('https://cafe.kiite.jp/pc/');
 
-        // ★注意: main.js が window.open を横取りするので、
-        // このコードを変更しなくても、PCのデフォルトブラウザで開かれるようになります
         const xURL = `https://twitter.com/intent/tweet?text=${encodedText}&url=${kiiteURL}`;
         const misskeyURL = `https://misskey-hub.net/share?text=${encodedText}&url=${kiiteURL}&visibility=public&localOnly=0`;
 
@@ -99,21 +94,36 @@
             const originalButton = document.querySelector(`.tweet .button:not([${PATCHED_ATTR}])`);
             if (!originalButton) return;
 
-            console.log('[Kiite Patcher v6] Found unpatched tweet button. Patching...');
+            console.log('[Kiite Patcher v7] Found unpatched tweet button. Patching...');
             originalButton.setAttribute(PATCHED_ATTR, 'true');
 
             const newButton = originalButton.cloneNode(true);
+
+            // ★★★
+            // ★ 変更 (ボタンの見た目を変更)
+            // ★★★
+            try {
+                // アイコンを変更 (fa-twitter-square -> fas fa-share-square)
+                const icon = newButton.querySelector('i');
+                if (icon) {
+                    icon.className = 'fas fa-share-square'; // Font Awesome 5 の標準的な共有アイコン
+                }
+                // ラベルテキストを変更 (ツイート -> 共有)
+                const label = newButton.querySelector('.label');
+                if (label) {
+                    label.innerText = '共有';
+                }
+            } catch (e) {
+                console.warn('[Kiite Patcher v7] Failed to change button appearance:', e);
+            }
+
+
+            // 2. 元のボタンと入れ替える
             originalButton.parentNode.replaceChild(newButton, originalButton);
 
             // 3. 新しいボタンに、自作のモーダル表示機能を追加
             newButton.addEventListener('click', (e) => {
-
-                // ★★★
-                // ★ 変更 (問題1の対策):
-                // これで Kiite Cafe 本体のクリックイベントが発火しなくなります
-                e.stopImmediatePropagation();
-                // ★★★
-
+                e.stopImmediatePropagation(); // Kiite Cafe 本体のクリックイベントを停止
                 const inner = newButton.closest('.inner');
                 if (!inner) return;
 
@@ -124,7 +134,7 @@
             });
 
         } catch (e) {
-            console.error('[Kiite Patcher v6] Error in patcher interval:', e);
+            console.error('[Kiite Patcher v7] Error in patcher interval:', e);
         }
     }, 1000);
 
