@@ -1,5 +1,5 @@
 {
-  "name": "kiite-app",
+  "name": "kiite-wo-kikitai",
   "version": "1.0.0",
   "description": "Kiite Cafeをバックグラウンド再生できるデスクトップアプリ",
   "main": "main.js",
@@ -15,8 +15,8 @@
     "electron-builder": "^24.0.0"
   },
   "build": {
-    "appId": "com.yourname.kiite-cafe-desktop",
-    "productName": "Kiite Cafe Desktop",
+    "appId": "com.yuukei.kiite-wo-kikitai",
+    "productName": "Kiite Cafe Wo Kikitai(Desktop)",
     "files": [
       "main.js",
       "injector.js",
