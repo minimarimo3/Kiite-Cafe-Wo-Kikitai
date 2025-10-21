@@ -16,7 +16,9 @@
 ## ダウンロード
 
 Windows: [exeファイルをダウンロード](https://github.com/minimarimo3/Kiite-Cafe-Wo-Kikitai/releases/download/v1.0.0/Kiite.Cafe.Wo.Kikitai.Desktop.Setup.1.0.0.exe)
+
 macOS(ARM): [dmgファイルをダウンロード](https://github.com/minimarimo3/Kiite-Cafe-Wo-Kikitai/releases/download/v1.0.0/Kiite.Cafe.Wo.Kikitai.Desktop.-1.0.0-arm64.dmg)
+
 macOS(X86_64): 面倒なので作ってません。連絡ありゃ作ると思います。
 
 ## 初回設定
