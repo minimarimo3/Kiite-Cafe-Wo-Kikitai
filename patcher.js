@@ -64,7 +64,7 @@
         // ★注意: main.js が window.open を横取りするので、
         // このコードを変更しなくても、PCのデフォルトブラウザで開かれるようになります
         const xURL = `https://twitter.com/intent/tweet?text=${encodedText}&url=${kiiteURL}`;
-        const misskeyURL = `https://${MISSKEY_INSTANCE}/share?text=${encodedText}&url=${kiiteURL}`;
+        const misskeyURL = `https://misskey-hub.net/share?text=${encodedText}&url=${kiiteURL}&visibility=public&localOnly=0`;
 
         const modalHTML = `
             <div id="${MODAL_BG_ID}"></div>
