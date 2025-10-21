@@ -88,7 +88,7 @@ function createWindow() {
 
     // --- 初期ロードとデバッグ ---
     win.loadURL('https://kiite.jp');
-    win.webContents.openDevTools(); // デバッグが不要ならコメントアウト
+    // win.webContents.openDevTools(); // デバッグが不要ならコメントアウト
 }
 
 // --- アプリのライフサイクル ---
