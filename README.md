@@ -19,6 +19,12 @@ Windows: [exeファイルをダウンロード](https://github.com/minimarimo3/K
 
 macOS(ARM): [dmgファイルをダウンロード](https://github.com/minimarimo3/Kiite-Cafe-Wo-Kikitai/releases/download/v1.0.0/Kiite.Cafe.Wo.Kikitai.Desktop.-1.0.0-arm64.dmg)
 
+> [!IMPORTANT]
+> 「（アプリ名）は壊れているため開けません。ゴミ箱に入れる必要があります。」と表示されると思います。
+> これはAppleが、お前開発者登録（年一万五千円）しとらんやんけ！って言ってるだけで別にアプリが壊れてるわけじゃないです。
+> これが出たらいったんゴミ箱に入れた後「ターミナル」というアプリを開き、`xattr -rc ~/Downloads/Kiite.Cafe.Wo.Kikitai.Desktop.-1.0.0-arm64.dmg`を張り付けてEnterキーを押してください。
+> ChatGPTとかに聞けばもっと分かりやすく教えてくれるでしょう。
+
 macOS(X86_64): 面倒なので作ってません。連絡ありゃ作ると思います。
 
 ## 初回設定
