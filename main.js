@@ -1,61 +1,119 @@
-// main.js (v9 - ウィンドウサイズを記憶)
-const { app, BrowserWindow, shell } = require('electron');
+// main.js (v11 - バックグラウンド通知)
+const { app, BrowserWindow, shell, Tray, Menu, nativeImage, Notification } = require('electron'); // ★ 変更: Notification を追加
 const path = require('path');
 const fs = require('fs');
-
 const windowStateKeeper = require('electron-window-state');
 
-// --- 自動再生フラグ (アプリ起動前に設定) ---
+let win;
+let tray;
+
+// --- 自動再生フラグ (コメントアウトのまま) ---
 try {
-    app.commandLine.appendSwitch('disable-features', 'MediaEngagementBypassAutoplayPolicies');
-    app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
+    // app.commandLine.appendSwitch('disable-features', 'MediaEngagementBypassAutoplayPolicies');
+    // app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 } catch (e) {
     console.error('Failed to append command line switch:', e);
 }
 
-// --- 注入するJSコードを外部ファイルから読み込む ---
+// --- 注入するJSコードを外部ファイルから読み込む (変更なし) ---
 let injectorScript = '';
 let patcherScript = '';
-
 try {
     const injectorPath = path.join(__dirname, 'injector.js');
     injectorScript = fs.readFileSync(injectorPath, 'utf8');
-
     const patcherPath = path.join(__dirname, 'patcher.js');
     patcherScript = fs.readFileSync(patcherPath, 'utf8');
-
 } catch (e) {
     console.error('Failed to read injector.js or patcher.js:', e);
     app.quit();
 }
 
+// --- トレイを作成する関数 (変更なし) ---
+function createTray() {
+    const iconPath = path.join(__dirname, 'tray-icon.png');
+    const icon = nativeImage.createFromPath(iconPath);
+    tray = new Tray(icon);
+    tray.setToolTip('Kiite Cafe Desktop');
+    tray.on('click', () => {
+        if (win.isVisible()) {
+            win.hide();
+            win.setSkipTaskbar(true);
+        } else {
+            win.show();
+            win.setSkipTaskbar(false);
+        }
+    });
+    const contextMenu = Menu.buildFromTemplate([
+        {
+            label: '表示 / 非表示',
+            click: () => {
+                if (win.isVisible()) {
+                    win.hide();
+                    win.setSkipTaskbar(true);
+                } else {
+                    win.show();
+                    win.setSkipTaskbar(false);
+                }
+            }
+        },
+        { type: 'separator' },
+        {
+            label: '終了',
+            click: () => {
+                app.isQuitting = true;
+                app.quit();
+            }
+        }
+    ]);
+    tray.setContextMenu(contextMenu);
+}
+
 
 function createWindow() {
-
-    // 前回のウィンドウサイズと位置をロード (なければデフォルト値を設定)
     let mainWindowState = windowStateKeeper({
         defaultWidth: 1200,
         defaultHeight: 800
     });
 
-    const win = new BrowserWindow({
+    win = new BrowserWindow({
         x: mainWindowState.x,
         y: mainWindowState.y,
         width: mainWindowState.width,
         height: mainWindowState.height,
         webPreferences: {
+            // (変更なし)
         }
     });
 
-    // ウィンドウの状態 (サイズ、位置、最大化) を自動で保存・管理させる
     mainWindowState.manage(win);
 
+    // ★ 変更: 
+    // ウィンドウの「×」ボタンが押されたときの動作を上書き
+    win.on('close', (event) => {
+        if (!app.isQuitting) {
+            event.preventDefault();
+            win.hide();
+            win.setSkipTaskbar(true);
 
-    // (問題2の対策) window.open() の呼び出しをすべて横取りする
+            // ★★★
+            // ★ 変更: ここに通知機能を追加
+            // ★★★
+            if (Notification.isSupported()) {
+                const iconPath = path.join(__dirname, 'tray-icon.png'); // タスクトレイと同じアイコンを使用
+
+                new Notification({
+                    title: 'Kiite Cafe Desktop',
+                    body: 'バックグラウンドで再生中です。終了するにはトレイアイコンを右クリックしてください。',
+                    icon: iconPath // Windowsではiconが正しく表示されない場合があるが、macOSでは表示される
+                }).show();
+            }
+        }
+    });
+
+    // (問題2の対策) window.open() の呼び出しをすべて横取りする (変更なし)
     win.webContents.setWindowOpenHandler(({ url }) => {
         try {
             if (url.startsWith('https://')) {
-                console.log(`[WindowHandler] Opening external URL: ${url}`);
                 shell.openExternal(url);
             }
         } catch (e) {
@@ -65,27 +123,19 @@ function createWindow() {
     });
 
 
-
-    // (対策A) Niconicoのiframeが読み込まれたら、injector.js を注入する
+    // --- イベントリスナー (変更なし) ---
     win.webContents.on('did-frame-navigate', (event, url, httpResponseCode, httpStatusText, isMainFrame) => {
         if (!isMainFrame && url.includes('embed.nicovideo.jp')) {
-            console.log(`[Kiite Injector] Target iframe found: ${url}. Injecting hooks...`);
             win.webContents.executeJavaScript(injectorScript)
                 .catch(err => console.error('Failed to execute script:', err));
         }
     });
-
-    // (自動リダイレクト & Patcher注入) ページの読み込みが完了したら発火
     win.webContents.on('did-finish-load', () => {
         const currentURL = win.webContents.getURL();
-
         if (currentURL === 'https://kiite.jp/' || currentURL === 'https://kiite.jp/index.html') {
-            console.log('[Kiite Auto-Redirect] Main page loaded. Redirecting to cafe...');
             win.loadURL('https://cafe.kiite.jp/pc/');
         }
-
         if (currentURL.startsWith('https://cafe.kiite.jp/')) {
-            console.log('[Kiite Patcher] Cafe page loaded. Injecting UI patcher...');
             win.webContents.executeJavaScript(patcherScript)
                 .catch(err => console.error('Failed to execute patcher script:', err));
         }
@@ -97,16 +147,25 @@ function createWindow() {
 }
 
 // --- アプリのライフサイクル (変更なし) ---
-app.whenReady().then(createWindow);
-
+app.whenReady().then(() => {
+    createWindow();
+    createTray();
+});
+app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+        if (win) {
+            win.show();
+            win.setSkipTaskbar(false);
+        } else {
+            createWindow();
+        }
+    } else {
+        win.show();
+        win.setSkipTaskbar(false);
+    }
+});
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         app.quit();
-    }
-});
-
-app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-        createWindow();
     }
 });

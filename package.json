@@ -1,6 +1,6 @@
 {
   "name": "kiite-wo-kikitai",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Kiite Cafeをバックグラウンド再生できるデスクトップアプリ",
   "main": "main.js",
   "scripts": {
@@ -15,19 +15,24 @@
     "electron-builder": "^24.0.0"
   },
   "build": {
-    "appId": "com.yuukei.kiite-wo-kikitai",
+    "appId": "jp.yuukei.kiite-wo-kikitai",
     "productName": "Kiite Cafe Wo Kikitai(Desktop)",
     "files": [
       "main.js",
       "injector.js",
       "patcher.js",
-      "package.json"
+      "package.json",
+      "tray-icon.png",
+      "icon.ico",
+      "icon.icns"
     ],
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "icon.ico"
     },
     "mac": {
-      "target": "dmg"
+      "target": "dmg",
+      "icon": "icon.icns"
     },
     "nsis": {
       "oneClick": false,
