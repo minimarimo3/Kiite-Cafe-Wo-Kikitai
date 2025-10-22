@@ -7,6 +7,8 @@ const windowStateKeeper = require('electron-window-state');
 let win;
 let tray;
 
+app.setAppUserModelId('jp.yuukei.kikitai');
+
 // --- 自動再生フラグ (コメントアウトのまま) ---
 try {
     // app.commandLine.appendSwitch('disable-features', 'MediaEngagementBypassAutoplayPolicies');
