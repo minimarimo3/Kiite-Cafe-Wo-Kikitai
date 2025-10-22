@@ -15,9 +15,9 @@
 
 ## ダウンロード
 
-Windows: [exeファイルをダウンロード](https://github.com/minimarimo3/Kiite-Cafe-Wo-Kikitai/releases/download/v1.0.0/Kiite.Cafe.Wo.Kikitai.Desktop.Setup.1.0.0.exe)
+Windows: [exeファイルをダウンロード](https://github.com/minimarimo3/Kiite-Cafe-Wo-Kikitai/releases/download/v1.0.1/Kiite.Cafe.Wo.Kikitai.Desktop.Setup.1.0.1.exe)
 
-macOS(ARM): [dmgファイルをダウンロード](https://github.com/minimarimo3/Kiite-Cafe-Wo-Kikitai/releases/download/v1.0.0/Kiite.Cafe.Wo.Kikitai.Desktop.-1.0.0-arm64.dmg)
+macOS(ARM): [dmgファイルをダウンロード](https://github.com/minimarimo3/Kiite-Cafe-Wo-Kikitai/releases/download/v1.0.1/Kiite.Cafe.Wo.Kikitai.Desktop.-1.0.1-arm64.dmg)
 
 > [!IMPORTANT]
 > 「（アプリ名）は壊れているため開けません。ゴミ箱に入れる必要があります。」と表示されると思います。
