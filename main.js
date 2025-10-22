@@ -81,7 +81,7 @@ function createWindow() {
         width: mainWindowState.width,
         height: mainWindowState.height,
         webPreferences: {
-            // (変更なし)
+            // backgroundThrottling: false
         }
     });
 
