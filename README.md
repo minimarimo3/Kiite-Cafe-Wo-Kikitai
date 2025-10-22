@@ -8,7 +8,7 @@
 
 ## 機能
 
-- バックグラウンド再生
+- 最小化状態でもバックグラウンド再生
 - Misskeyでの共有
 
 ![Misskeyに共有可能なダイアログが表示されている](./document/image/misskey_share.png)
