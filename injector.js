@@ -1,4 +1,3 @@
-// injector.js
 (function () {
     'use strict';
     try {

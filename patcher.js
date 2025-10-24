@@ -1,18 +1,11 @@
-// patcher.js (v9 - グローバルインスタンスからデータを取得)
-(function() {
+(function () {
     'use strict';
-    
-    // ★★★ 
-    // ↓↓ ここをあなたのMisskeyインスタンスのドメイン名に書き換えてください ↓↓
-    // ★★★
-    const MISSKEY_INSTANCE = 'misskey.io'; 
-    
+
     const MODAL_ID = 'kiite-share-modal';
     const MODAL_BG_ID = 'kiite-share-modal-bg';
     const PATCHED_ATTR = 'data-kiite-patched';
 
     // 1. 共有モーダル用のスタイル(CSS)を<head>に追加
-    // (v8から変更なし)
     const style = document.createElement('style');
     style.type = 'text/css';
     style.innerHTML = `
@@ -42,10 +35,10 @@
     // 3. モーダルを表示する関数
     function showShareModal(title, video_id) {
         hideModal();
-        
+
         let shareText = `♪ ${title} #${video_id} #Kiite\n`;
         shareText += "Kiite Cafeできいてます https://cafe.kiite.jp/pc/\n";
-        
+
         const encodedText = encodeURIComponent(shareText);
         const videoURL = encodeURIComponent(`https://nicovideo.jp/watch/${video_id}`);
 
@@ -61,17 +54,17 @@
                 <button id="kiite-share-cancel" class="kiite-share-button cancel">キャンセル</button>
             </div>
         `;
-        
+
         document.body.insertAdjacentHTML('beforeend', modalHTML);
-        
+
         document.getElementById(MODAL_BG_ID).addEventListener('click', hideModal);
         document.getElementById('kiite-share-cancel').addEventListener('click', hideModal);
-        
+
         document.getElementById('kiite-share-x').addEventListener('click', () => {
             window.open(xURL, '_blank', 'width=600,height=400');
             hideModal();
         });
-        
+
         document.getElementById('kiite-share-misskey').addEventListener('click', () => {
             window.open(misskeyURL, '_blank', 'width=600,height=400');
             hideModal();
@@ -87,7 +80,7 @@
 
             // D3.datum() ではなく、Kiite Cafeのグローバルインスタンスから直接データを取得
             let nowPlayingData = null;
-            
+
             // Kiite Cafe は window.cafe_music にインスタンスを保持していると仮定
             if (typeof window.cafe_music !== 'undefined' && window.cafe_music && window.cafe_music.now_playing) {
                 nowPlayingData = window.cafe_music.now_playing;
@@ -98,36 +91,36 @@
                 console.warn('[Kiite Patcher v9] Data not yet available (window.cafe_music.now_playing is null). Waiting...');
                 return;
             }
-            
+
             const { title, video_id } = nowPlayingData;
 
             console.log(`[Kiite Patcher v9] Found unpatched button for: ${video_id}`);
             originalButton.setAttribute(PATCHED_ATTR, 'true');
-            
+
             const newButton = originalButton.cloneNode(true);
 
             // ボタンの見た目を変更
             try {
                 const icon = newButton.querySelector('i');
-                if (icon) icon.className = 'fas fa-share-square'; 
+                if (icon) icon.className = 'fas fa-share-square';
                 const label = newButton.querySelector('.label');
                 if (label) label.innerText = '共有';
             } catch (e) {
                 console.warn('[Kiite Patcher v9] Failed to change button appearance:', e);
             }
-            
+
             originalButton.parentNode.replaceChild(newButton, originalButton);
-            
+
             newButton.addEventListener('click', (e) => {
                 e.stopImmediatePropagation(); // Kiite Cafe 本体のクリックイベントを停止
-                
+
                 showShareModal(title, video_id);
             });
-        
+
         } catch (e) {
             // window.cafe_music が存在しない場合のエラーもキャッチ
             console.error('[Kiite Patcher v9] Error in patcher interval:', e);
         }
-    }, 1000); 
+    }, 1000);
 
 })();
